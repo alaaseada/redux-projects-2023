@@ -188,11 +188,16 @@ Cart
   margin-top: 4rem;
   text-align: center;
 }
-.cart-total h4 {
+.cart-total {
   text-transform: capitalize;
   display: flex;
   justify-content: space-between;
-  margin-top: 1rem;
+  margin-bottom: 1rem;
+  letter-spacing: 0.2rem;
+}
+.cart-total span {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
 }
 .clear-btn,
 .confirm-btn {
@@ -267,6 +272,7 @@ Cart Item
   margin-bottom: 0;
   font-size: 1.25rem;
   line-height: 1;
+  display: block;
 }
 hr {
   background: var(--clr-grey-5);
