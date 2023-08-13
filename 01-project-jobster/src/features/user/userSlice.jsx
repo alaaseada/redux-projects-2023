@@ -1,58 +1,36 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
-import {
-  addUserToLocalStorage,
-  getUserFromLocalStorage,
-  removeUserFromLocalStorage,
-} from '../../utils/localStorage';
-import {
-  loginUserThunk,
-  registerUserThunk,
-  updateUserThunk,
-  clearStoreThunk,
-} from './userThunk';
+import axios from 'axios';
+
+const registration_url =
+  'https://jobify-prod.herokuapp.com/api/v1/toolkit/auth/register';
 
 const initialState = {
   isLoading: false,
-  isSidebarOpen: false,
-  user: getUserFromLocalStorage(),
+  user: null,
 };
 
 export const registerUser = createAsyncThunk(
-  'user/registerUser',
-  async (user, thunkAPI) => {
-    return registerUserThunk('/auth/register', user, thunkAPI);
+  'users/registerUser',
+  async ({ name, email, password }) => {
+    try {
+      const response = await axios.post(registration_url, {
+        name,
+        email,
+        password,
+      });
+      return response.data;
+    } catch (error) {
+      toast.error(error.response.data.msg);
+    }
   }
 );
-
-export const loginUser = createAsyncThunk(
-  'user/loginUser',
-  async (user, thunkAPI) => {
-    return loginUserThunk('/auth/login', user, thunkAPI);
-  }
-);
-
-export const updateUser = createAsyncThunk(
-  'user/updateUser',
-  async (user, thunkAPI) => {
-    return updateUserThunk('/auth/updateUser', user, thunkAPI);
-  }
-);
-export const clearStore = createAsyncThunk('user/clearStore', clearStoreThunk);
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    toggleSidebar: (state) => {
-      state.isSidebarOpen = !state.isSidebarOpen;
-    },
-    logoutUser: (state, { payload }) => {
-      state.user = null;
-      state.isSidebarOpen = false;
-      removeUserFromLocalStorage();
-      if (payload) {
-        toast.success(payload);
-      }
+    login: (state, action) => {
+      console.log('i am here to login the user');
     },
   },
   extraReducers: (builder) => {
@@ -60,52 +38,19 @@ const userSlice = createSlice({
       .addCase(registerUser.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(registerUser.fulfilled, (state, { payload }) => {
-        const { user } = payload;
+      .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = user;
-        addUserToLocalStorage(user);
-        toast.success(`Hello There ${user.name}`);
+        if (action.payload) {
+          state.user = { ...action.payload.user };
+          toast.success('User has been successfully created.');
+        }
       })
-      .addCase(registerUser.rejected, (state, { payload }) => {
+      .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
-        toast.error(payload);
-      })
-      .addCase(loginUser.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(loginUser.fulfilled, (state, { payload }) => {
-        const { user } = payload;
-        state.isLoading = false;
-        state.user = user;
-        addUserToLocalStorage(user);
-
-        toast.success(`Welcome Back ${user.name}`);
-      })
-      .addCase(loginUser.rejected, (state, { payload }) => {
-        state.isLoading = false;
-        toast.error(payload);
-      })
-      .addCase(updateUser.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(updateUser.fulfilled, (state, { payload }) => {
-        const { user } = payload;
-        state.isLoading = false;
-        state.user = user;
-        addUserToLocalStorage(user);
-
-        toast.success(`User Updated!`);
-      })
-      .addCase(updateUser.rejected, (state, { payload }) => {
-        state.isLoading = false;
-        toast.error(payload);
-      })
-      .addCase(clearStore.rejected, () => {
-        toast.error('There was an error..');
+        state.user = null;
       });
   },
 });
 
-export const { toggleSidebar, logoutUser } = userSlice.actions;
+export const { login } = userSlice.actions;
 export default userSlice.reducer;
