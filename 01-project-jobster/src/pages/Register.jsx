@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { Logo, FormRow } from '../components';
 import Wrapper from '../assets/wrappers/RegisterPage';
 import { toast } from 'react-toastify';
-import { registerUser, login } from '../features/user/userSlice';
+import { registerUser, loginUser } from '../features/user/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const initialValues = {
   name: '',
@@ -11,16 +12,25 @@ const initialValues = {
   password: '',
   isMember: true,
 };
+
 function Register() {
   const [values, setValues] = useState(initialValues);
   const dispatch = useDispatch();
   const { isLoading, user } = useSelector((store) => store.users);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      setTimeout(() => navigate('/'), 2000);
+    }
+  }, [user, navigate]);
 
   const handleChange = (e) => {
     const name = e.target.name;
     const value = e.target.value;
     setValues({ ...values, [name]: value });
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const { name, email, password, isMember } = values;
@@ -29,13 +39,15 @@ function Register() {
       return;
     }
     values.isMember
-      ? dispatch(login({ email, password }))
+      ? dispatch(loginUser({ email, password }))
       : dispatch(registerUser({ name, email, password }));
   };
+
   const toggleMember = (e) => {
     e.preventDefault();
     setValues({ ...values, isMember: !values.isMember });
   };
+
   return (
     <Wrapper className='full-page'>
       <form className='form' onSubmit={handleSubmit}>
@@ -64,7 +76,7 @@ function Register() {
           value={values.password}
           handleFn={handleChange}
         />
-        <button type='submit' className='btn btn-block'>
+        <button type='submit' className='btn btn-block' disabled={isLoading}>
           {isLoading ? 'Loading...' : 'Submit'}
         </button>
         <p>

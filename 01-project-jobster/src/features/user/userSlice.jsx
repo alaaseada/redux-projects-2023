@@ -1,36 +1,47 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
-import axios from 'axios';
-
-const registration_url =
-  'https://jobify-prod.herokuapp.com/api/v1/toolkit/auth/register';
+import customFetch from '../../utils/axios';
+import {
+  storeUserInLocalStorage,
+  getUserFromLocalStorage,
+} from '../../utils/localStorage';
 
 const initialState = {
   isLoading: false,
-  user: null,
+  isSidebarOpen: false,
+  user: getUserFromLocalStorage(),
 };
 
 export const registerUser = createAsyncThunk(
   'users/registerUser',
-  async ({ name, email, password }) => {
+  async (user, thunkAPI) => {
     try {
-      const response = await axios.post(registration_url, {
-        name,
-        email,
-        password,
-      });
+      const response = await customFetch.post(`/auth/register`, user);
       return response.data;
     } catch (error) {
-      toast.error(error.response.data.msg);
+      return thunkAPI.rejectWithValue(error.response.data.msg);
     }
   }
 );
+
+export const loginUser = createAsyncThunk(
+  'users/loginUser',
+  async (user, thunkAPI) => {
+    try {
+      const response = await customFetch.post(`/auth/login`, user);
+      return response.data;
+    } catch (error) {
+      thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    login: (state, action) => {
-      console.log('i am here to login the user');
+    toggleSidebar: (state, action) => {
+      state.isSidebarOpen = !state.isSidebarOpen;
     },
   },
   extraReducers: (builder) => {
@@ -40,17 +51,32 @@ const userSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        if (action.payload) {
-          state.user = { ...action.payload.user };
-          toast.success('User has been successfully created.');
-        }
+        state.user = action.payload.user;
+        storeUserInLocalStorage(action.payload.user);
+        toast.success('User has been successfully created.');
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
         state.user = null;
+        toast.error(action.payload);
+      })
+      .addCase(loginUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        const user = action.payload.user;
+        state.isLoading = false;
+        state.user = user;
+        storeUserInLocalStorage(user);
+        toast.success(`Welcome, ${user.name}`);
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        toast.error(action.payload);
       });
   },
 });
 
-export const { login } = userSlice.actions;
+export const { toggleSidebar } = userSlice.actions;
 export default userSlice.reducer;
