@@ -1,10 +1,11 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
-import customFetch from '../../utils/axios';
 import {
   storeUserInLocalStorage,
   getUserFromLocalStorage,
+  removeUserFromLocalStorage,
 } from '../../utils/localStorage';
+import { registerUser, loginUser, UpdateUser } from './userThunks';
 
 const initialState = {
   isLoading: false,
@@ -12,36 +13,17 @@ const initialState = {
   user: getUserFromLocalStorage(),
 };
 
-export const registerUser = createAsyncThunk(
-  'users/registerUser',
-  async (user, thunkAPI) => {
-    try {
-      const response = await customFetch.post(`/auth/register`, user);
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data.msg);
-    }
-  }
-);
-
-export const loginUser = createAsyncThunk(
-  'users/loginUser',
-  async (user, thunkAPI) => {
-    try {
-      const response = await customFetch.post(`/auth/login`, user);
-      return response.data;
-    } catch (error) {
-      thunkAPI.rejectWithValue(error.response.data.msg);
-    }
-  }
-);
-
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    toggleSidebar: (state, action) => {
+    toggleSidebar: (state) => {
       state.isSidebarOpen = !state.isSidebarOpen;
+    },
+    logoutUser: (state) => {
+      state.user = null;
+      state.isSidebarOpen = false;
+      removeUserFromLocalStorage();
     },
   },
   extraReducers: (builder) => {
@@ -74,9 +56,23 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.user = null;
         toast.error(action.payload);
+      })
+      .addCase(UpdateUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(UpdateUser.fulfilled, (state, action) => {
+        const user = action.payload.user;
+        state.isLoading = false;
+        state.user = user;
+        storeUserInLocalStorage(user);
+        toast.success('Your data has been successfully updated');
+      })
+      .addCase(UpdateUser.rejected, (state, action) => {
+        state.isLoading = false;
+        toast.error(action.payload);
       });
   },
 });
 
-export const { toggleSidebar } = userSlice.actions;
+export const { toggleSidebar, logoutUser } = userSlice.actions;
 export default userSlice.reducer;
