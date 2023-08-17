@@ -3,9 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useEffect, useState } from 'react';
 import { FormRow } from '../../components';
+import { jobTypeOptions, jobStatusOptions } from '../../utils/constants';
+import FormRowSelect from '../../components/FormRowSelect';
+import { submitJob } from '../../features/job/jobSlice';
+import { addNewJob } from '../../features/job/jobSlice';
 
 const AddJob = () => {
   const { user } = useSelector((store) => store.users);
+  const dispatch = useDispatch();
   const { job, isLoading } = useSelector((store) => store.jobs);
 
   const initialState = {
@@ -16,8 +21,14 @@ const AddJob = () => {
     jobType: '',
   };
   const [jobInfo, setJobInfo] = useState(initialState);
+
+  useEffect(() => {
+    setJobInfo({ ...jobInfo, jobLocation: user?.location || '' });
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    dispatch(addNewJob(jobInfo));
   };
   const handleChange = (e) => {
     const name = e.target.name;
@@ -47,42 +58,26 @@ const AddJob = () => {
           />
           <FormRow
             labelText='job location'
-            name='location'
+            name='jobLocation'
             type='text'
-            value={jobInfo.location}
+            value={jobInfo.jobLocation}
             handleFn={handleChange}
           />
-          <div className='form-row'>
-            <label className='form-label' htmlFor='status'>
-              status
-            </label>
-            <select
-              name='status'
-              className='form-input'
-              value={jobInfo.status}
-              onChange={handleChange}
-            >
-              <option value='declined'>Declined</option>
-              <option value='interview'>Interview</option>
-              <option value='pending'>Pending</option>
-            </select>
-          </div>
-          <div className='form-row'>
-            <label className='form-label' htmlFor='type'>
-              job type
-            </label>
-            <select
-              name='type'
-              className='form-input'
-              value={jobInfo.type}
-              onChange={handleChange}
-            >
-              <option value='full-time'>Full-time</option>
-              <option value='part-time'>Part-time</option>
-              <option value='remote'>Remote</option>
-              <option value='internship'>Internship</option>
-            </select>
-          </div>
+          <FormRowSelect
+            labelText='Job Type'
+            name='jobType'
+            value={jobInfo.jobType}
+            options={jobTypeOptions}
+            handleFn={handleChange}
+          />
+          <FormRowSelect
+            labelText='Job Status'
+            name='status'
+            value={jobInfo.status}
+            options={jobStatusOptions}
+            handleFn={handleChange}
+          />
+
           <div className='btn-container'>
             <button
               type='button'
