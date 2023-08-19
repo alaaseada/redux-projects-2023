@@ -4,13 +4,11 @@ import { Logo } from '../components';
 import { toggleSidebar, logoutUser } from '../features/user/userSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const { user } = useSelector((store) => store.users);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const toggleDropDown = () => {
     setShowDropdown(!showDropdown);
@@ -40,7 +38,7 @@ const Navbar = () => {
               type='button'
               className='dropdown-btn'
               onClick={() => {
-                dispatch(logoutUser());
+                dispatch(logoutUser('logging out..'));
               }}
             >
               Logout

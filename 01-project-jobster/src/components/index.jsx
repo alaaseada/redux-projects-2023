@@ -8,3 +8,4 @@ export { default as NavLinks } from './NavLinks';
 export { default as Job } from './Job';
 export { default as JobInfo } from './JobInfo';
 export { default as JobList } from './JobList';
+export { default as Loading } from './Loading';

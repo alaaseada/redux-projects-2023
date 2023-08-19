@@ -1,28 +1,25 @@
-import { getAllJobs } from '../../features/job/jobSlice';
-import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { JobList } from '../../components';
-import SearchForm from '../../components/SearchForm';
+import { JobList, Loading } from '../../components';
+import { useEffect } from 'react';
+import { getAllJobs } from '../../features/allJobs/allJobsSlice';
 
 const AllJobs = () => {
-  const { jobList, isLoading } = useSelector((store) => store.jobs);
-  const [jobs, setJobs] = useState([]);
+  const { isLoading, jobs } = useSelector((store) => store.allJobs);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getAllJobs());
   }, []);
 
-  useEffect(() => {
-    setJobs(jobList);
-  }, [jobList]);
-
-  const filterJobs = ({ ...filters }) => {};
-
   return (
     <>
-      <SearchForm filterFn={filterJobs} />
-      {isLoading ? <div className='loading'></div> : <JobList jobs={jobs} />}
+      {isLoading ? (
+        <Loading center={true} />
+      ) : jobs.length ? (
+        <JobList jobs={jobs} />
+      ) : (
+        <h3>No jobs to display</h3>
+      )}
     </>
   );
 };

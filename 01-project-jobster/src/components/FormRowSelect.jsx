@@ -10,7 +10,7 @@ const FormRowSelect = ({ labelText, name, value, options, handleFn }) => {
         value={value}
         onChange={handleFn}
       >
-        {options.map((option, index) => {
+        {options?.map((option, index) => {
           return (
             <option key={index} value={option}>
               {option}

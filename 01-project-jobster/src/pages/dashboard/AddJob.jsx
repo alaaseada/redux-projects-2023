@@ -1,79 +1,102 @@
 import Wrapper from '../../assets/wrappers/DashboardFormPage';
 import { useSelector, useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
 import { useEffect, useState } from 'react';
-import { FormRow } from '../../components';
-import { jobTypeOptions, jobStatusOptions } from '../../utils/constants';
-import FormRowSelect from '../../components/FormRowSelect';
-import { submitJob } from '../../features/job/jobSlice';
-import { addNewJob } from '../../features/job/jobSlice';
+import { FormRow, FormRowSelect } from '../../components';
+import { toast } from 'react-toastify';
+import {
+  handleJobInput,
+  clearValues,
+  addNewJob,
+  editJob,
+} from '../../features/job/jobSlice';
 
 const AddJob = () => {
+  const {
+    isLoading,
+    isEditing,
+    position,
+    company,
+    status,
+    jobLocation,
+    jobType,
+    jobTypeOptions,
+    jobStatusOptions,
+    jobEditId,
+  } = useSelector((store) => store.jobs);
   const { user } = useSelector((store) => store.users);
+
   const dispatch = useDispatch();
-  const { job, isLoading } = useSelector((store) => store.jobs);
-
-  const initialState = {
-    position: '',
-    company: '',
-    jobLocation: user?.location || '',
-    status: 'pending',
-    jobType: '',
-  };
-  const [jobInfo, setJobInfo] = useState(initialState);
-
-  useEffect(() => {
-    setJobInfo({ ...jobInfo, jobLocation: user?.location || '' });
-  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(addNewJob(jobInfo));
+    if (!company || !location || !position) {
+      toast.error('Please provide all values.');
+      return;
+    }
+    if (isEditing) {
+      dispatch(
+        editJob({
+          id: jobEditId,
+          job: {
+            position,
+            status,
+            jobLocation,
+            jobType,
+            company,
+          },
+        })
+      );
+      return;
+    }
+    dispatch(addNewJob({ position, status, jobLocation, jobType, company }));
   };
   const handleChange = (e) => {
     const name = e.target.name;
     const value = e.target.value;
-    setJobInfo({ ...jobInfo, [name]: value });
+    dispatch(handleJobInput({ name, value }));
   };
-  const clearForm = (e) => {
-    e.preventDefault();
-    setJobInfo(initialState);
+  const clearForm = () => {
+    dispatch(clearValues());
   };
+  useEffect(() => {
+    if (!isEditing)
+      dispatch(handleJobInput({ name: 'jobLocation', value: user.location }));
+  }, []);
   return (
     <Wrapper>
       <form className='form' onSubmit={handleSubmit}>
-        <h3>Add job</h3>
+        <h3>{isEditing ? 'Edit Job' : 'Add job'}</h3>
         <div className='form-center'>
           <FormRow
             name='position'
             type='text'
-            value={jobInfo.position}
+            value={position}
             handleFn={handleChange}
           />
           <FormRow
             name='company'
             type='text'
-            value={jobInfo.company}
+            value={company}
             handleFn={handleChange}
           />
           <FormRow
             labelText='job location'
             name='jobLocation'
             type='text'
-            value={jobInfo.jobLocation}
+            value={jobLocation}
             handleFn={handleChange}
           />
           <FormRowSelect
             labelText='Job Type'
             name='jobType'
-            value={jobInfo.jobType}
+            value={jobType}
             options={jobTypeOptions}
             handleFn={handleChange}
           />
           <FormRowSelect
             labelText='Job Status'
             name='status'
-            value={jobInfo.status}
+            value={status}
             options={jobStatusOptions}
             handleFn={handleChange}
           />

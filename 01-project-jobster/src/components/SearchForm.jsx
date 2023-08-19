@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Wrapper from '../assets/wrappers/SearchContainer';
 import { FormRow, FormRowSelect } from '../components';
 import {
@@ -7,21 +6,7 @@ import {
   sortOptions,
 } from '../utils/constants';
 
-const initialState = {
-  search: '',
-  status: 'all',
-  jobType: 'all',
-  sort: 'latest',
-};
-const SearchForm = () => {
-  const [searchCriteria, setSearchCriteria] = useState(initialState);
-
-  const handleChange = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    setSearchCriteria({ ...searchCriteria, [name]: value });
-  };
-
+const SearchForm = ({ searchCriteria, handleFn }) => {
   return (
     <Wrapper>
       <form className='form'>
@@ -32,30 +17,30 @@ const SearchForm = () => {
             name='search'
             value={searchCriteria.search}
             type='text'
-            handleFn={handleChange}
+            handleFn={handleFn}
           />
           <FormRowSelect
             labelText='job status'
             name='status'
             value={searchCriteria.status}
             options={['all', ...jobStatusOptions]}
-            handleFn={handleChange}
+            handleFn={handleFn}
           />
           <FormRowSelect
             labelText='job type'
             name='jobType'
             value={searchCriteria.jobType}
             options={['all', ...jobTypeOptions]}
-            handleFn={handleChange}
+            handleFn={handleFn}
           />
           <FormRowSelect
             labelText='sort'
             name='sort'
             value={searchCriteria.sort}
             options={['all', ...sortOptions]}
-            handleFn={handleChange}
+            handleFn={handleFn}
           />
-          <button class='btn btn-block btn-danger'>Clear filters</button>
+          <button className='btn btn-block btn-danger'>Clear filters</button>
         </div>
       </form>
     </Wrapper>

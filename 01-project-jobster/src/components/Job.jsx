@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom';
 import Wrapper from '../assets/wrappers/Job';
 import { JobInfo } from '../components';
 import { FaLocationArrow, FaRegCalendarAlt, FaSuitcase } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
+import { deleteJob, setEditJob } from '../features/job/jobSlice';
+
 const Job = ({
   position,
   company,
@@ -16,6 +19,12 @@ const Job = ({
     day: '2-digit',
     year: 'numeric',
   });
+  const dispatch = useDispatch();
+
+  const handleDeleteJob = () => {
+    dispatch(deleteJob(_id));
+  };
+
   return (
     <Wrapper>
       <header>
@@ -34,10 +43,27 @@ const Job = ({
         </div>
         <footer>
           <div className='actions'>
-            <Link to='/add-job' className='btn edit-btn'>
+            <Link
+              to='/add-job'
+              className='btn edit-btn'
+              onClick={() => {
+                dispatch(
+                  setEditJob({
+                    jobEditId: _id,
+                    company,
+                    status,
+                    position,
+                    jobType,
+                    jobLocation,
+                  })
+                );
+              }}
+            >
               Edit
             </Link>
-            <button className='btn delete-btn'>Delete</button>
+            <button className='btn delete-btn' onClick={handleDeleteJob}>
+              Delete
+            </button>
           </div>
         </footer>
       </div>
