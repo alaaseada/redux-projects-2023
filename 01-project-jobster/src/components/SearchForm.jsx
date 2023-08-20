@@ -5,8 +5,22 @@ import {
   jobStatusOptions,
   sortOptions,
 } from '../utils/constants';
+import { useSelector, useDispatch } from 'react-redux';
+import { setSearchCriteria } from '../features/allJobs/allJobsSlice';
 
-const SearchForm = ({ searchCriteria, handleFn }) => {
+const SearchForm = () => {
+  const { search, searchStatus, searchJobType, sort } = useSelector(
+    (store) => store.allJobs
+  );
+  const dispatch = useDispatch();
+
+  const handleFn = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    console.log(name, value);
+    dispatch(setSearchCriteria({ name, value }));
+  };
+
   return (
     <Wrapper>
       <form className='form'>
@@ -15,28 +29,28 @@ const SearchForm = ({ searchCriteria, handleFn }) => {
           <FormRow
             labelText='search'
             name='search'
-            value={searchCriteria.search}
+            value={search}
             type='text'
             handleFn={handleFn}
           />
           <FormRowSelect
             labelText='job status'
             name='status'
-            value={searchCriteria.status}
+            value={searchStatus}
             options={['all', ...jobStatusOptions]}
             handleFn={handleFn}
           />
           <FormRowSelect
             labelText='job type'
             name='jobType'
-            value={searchCriteria.jobType}
+            value={searchJobType}
             options={['all', ...jobTypeOptions]}
             handleFn={handleFn}
           />
           <FormRowSelect
             labelText='sort'
             name='sort'
-            value={searchCriteria.sort}
+            value={sort}
             options={['all', ...sortOptions]}
             handleFn={handleFn}
           />

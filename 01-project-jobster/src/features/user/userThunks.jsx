@@ -30,11 +30,7 @@ export const UpdateUser = createAsyncThunk(
   'users/updateUser',
   async (user, thunkAPI) => {
     try {
-      const response = await customFetch.patch('/auth/updateUser', user, {
-        headers: {
-          Authorization: `Bearer ${thunkAPI.getState().users.user.token}`,
-        },
-      });
+      const response = await customFetch.patch('/auth/updateUser', user);
       return response.data;
     } catch (error) {
       if (error.response.status === 401) {

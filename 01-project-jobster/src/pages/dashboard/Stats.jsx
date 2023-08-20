@@ -1,11 +1,8 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Statistics from '../../components/Statistics';
 
 const Stats = () => {
-  return (
-    <div>
-      <h2>Stats</h2>
-    </div>
-  );
+  return <Statistics />;
 };
 export default Stats;

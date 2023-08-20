@@ -79,6 +79,17 @@ function Register() {
         <button type='submit' className='btn btn-block' disabled={isLoading}>
           {isLoading ? 'Loading...' : 'Submit'}
         </button>
+        <button
+          className='btn btn-block btn-hipster'
+          disabled={isLoading}
+          onClick={() => {
+            dispatch(
+              loginUser({ email: 'testUser@test.com', password: 'secret' })
+            );
+          }}
+        >
+          {isLoading ? 'Loading...' : 'Demo User'}
+        </button>
         <p>
           {values.isMember
             ? "Don't have an account yet?"

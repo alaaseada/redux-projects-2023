@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import Wrapper from '../assets/wrappers/Job';
 import { JobInfo } from '../components';
 import { FaLocationArrow, FaRegCalendarAlt, FaSuitcase } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { deleteJob, setEditJob } from '../features/job/jobSlice';
 
 const Job = ({
@@ -20,6 +20,7 @@ const Job = ({
     year: 'numeric',
   });
   const dispatch = useDispatch();
+  const { isLoading } = useSelector((store) => store.jobs);
 
   const handleDeleteJob = () => {
     dispatch(deleteJob(_id));
@@ -61,7 +62,11 @@ const Job = ({
             >
               Edit
             </Link>
-            <button className='btn delete-btn' onClick={handleDeleteJob}>
+            <button
+              className='btn delete-btn'
+              onClick={handleDeleteJob}
+              disabled={isLoading}
+            >
               Delete
             </button>
           </div>

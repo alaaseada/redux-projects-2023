@@ -16,26 +16,10 @@ const initialState = {
   jobStatusOptions: ['pending', 'interview', 'declined'],
 };
 
-export const addNewJob = createAsyncThunk(
-  'jobs/addNewJob',
-  async (job, thunkAPI) => {
-    return addJobThunk(job, thunkAPI);
-  }
-);
+export const addNewJob = createAsyncThunk('jobs/addNewJob', addJobThunk);
+export const deleteJob = createAsyncThunk('jobs/deleteJob', deleteJobThunk);
+export const editJob = createAsyncThunk('jobs/editJob', editJobThunk);
 
-export const deleteJob = createAsyncThunk(
-  'jobs/deleteJob',
-  async (id, thunkAPI) => {
-    return deleteJobThunk(id, thunkAPI);
-  }
-);
-
-export const editJob = createAsyncThunk(
-  'jobs/editJob',
-  async ({ id, job }, thunkAPI) => {
-    return editJobThunk({ id, job }, thunkAPI);
-  }
-);
 const jobSlice = createSlice({
   name: 'job',
   initialState,

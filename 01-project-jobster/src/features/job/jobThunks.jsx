@@ -6,7 +6,7 @@ import { showLoading, hideLoading, getAllJobs } from '../allJobs/allJobsSlice';
 
 export const addJobThunk = async (job, thunkAPI) => {
   try {
-    const response = await customFetch.post('/jobs', job, authHeader(thunkAPI));
+    const response = await customFetch.post('/jobs', job);
     thunkAPI.dispatch(clearValues());
     return response.data;
   } catch (error) {
@@ -22,10 +22,7 @@ export const addJobThunk = async (job, thunkAPI) => {
 export const deleteJobThunk = async (id, thunkAPI) => {
   thunkAPI.dispatch(showLoading());
   try {
-    const response = await customFetch.delete(
-      `/jobs/${id}`,
-      authHeader(thunkAPI)
-    );
+    const response = await customFetch.delete(`/jobs/${id}`);
     thunkAPI.dispatch(getAllJobs());
     return response.data;
   } catch (error) {
@@ -41,11 +38,7 @@ export const deleteJobThunk = async (id, thunkAPI) => {
 
 export const editJobThunk = async ({ id, job }, thunkAPI) => {
   try {
-    const response = await customFetch.patch(
-      `/jobs/${id}`,
-      job,
-      authHeader(thunkAPI)
-    );
+    const response = await customFetch.patch(`/jobs/${id}`, job);
     return response.data;
   } catch (error) {
     console.log(error);
