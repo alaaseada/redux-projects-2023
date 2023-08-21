@@ -1,23 +1,23 @@
 import Wrapper from '../assets/wrappers/SearchContainer';
 import { FormRow, FormRowSelect } from '../components';
-import {
-  jobTypeOptions,
-  jobStatusOptions,
-  sortOptions,
-} from '../utils/constants';
 import { useSelector, useDispatch } from 'react-redux';
-import { setSearchCriteria } from '../features/allJobs/allJobsSlice';
+import {
+  setSearchCriteria,
+  clearSearchCriteria,
+} from '../features/allJobs/allJobsSlice';
 
 const SearchForm = () => {
-  const { search, searchStatus, searchJobType, sort } = useSelector(
-    (store) => store.allJobs
+  const { search, searchStatus, searchJobType, sort, sortOptions, isLoading } =
+    useSelector((store) => store.allJobs);
+  const { jobTypeOptions, jobStatusOptions } = useSelector(
+    (store) => store.jobs
   );
   const dispatch = useDispatch();
 
   const handleFn = (e) => {
+    if (isLoading) return;
     const name = e.target.name;
     const value = e.target.value;
-    console.log(name, value);
     dispatch(setSearchCriteria({ name, value }));
   };
 
@@ -35,14 +35,14 @@ const SearchForm = () => {
           />
           <FormRowSelect
             labelText='job status'
-            name='status'
+            name='searchJobStatus'
             value={searchStatus}
             options={['all', ...jobStatusOptions]}
             handleFn={handleFn}
           />
           <FormRowSelect
             labelText='job type'
-            name='jobType'
+            name='searchJobType'
             value={searchJobType}
             options={['all', ...jobTypeOptions]}
             handleFn={handleFn}
@@ -54,7 +54,15 @@ const SearchForm = () => {
             options={['all', ...sortOptions]}
             handleFn={handleFn}
           />
-          <button className='btn btn-block btn-danger'>Clear filters</button>
+          <button
+            className='btn btn-block btn-danger'
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(clearSearchCriteria());
+            }}
+          >
+            Clear filters
+          </button>
         </div>
       </form>
     </Wrapper>

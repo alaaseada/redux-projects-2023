@@ -4,8 +4,8 @@ import { toast } from 'react-toastify';
 
 const initialSearchCriteria = {
   search: '',
-  jobType: 'all',
-  status: 'all',
+  searchJobType: 'all',
+  searchJobStatus: 'all',
   sort: 'latest',
   sortOptions: ['latest', 'oldest', 'a-z', 'z-a'],
 };
@@ -15,6 +15,7 @@ const initialState = {
   jobs: [],
   totalJobs: 0,
   numOfPages: 1,
+  page: 1,
   stats: {},
   monthlyApplications: [],
   ...initialSearchCriteria,
@@ -38,7 +39,17 @@ const allJobsSlice = createSlice({
       state.isLoading = false;
     },
     setSearchCriteria: (state, { payload: { name, value } }) => {
-      return { ...state, [name]: value };
+      state[name] = value;
+      state.page = 1;
+    },
+    clearSearchCriteria: (state) => {
+      return { ...state, ...initialSearchCriteria, page: 1 };
+    },
+    handlePage: (state, { payload }) => {
+      return { ...state, page: payload };
+    },
+    clearState: (state) => {
+      return { ...initialState };
     },
   },
   extraReducers: (builder) => {
@@ -73,6 +84,12 @@ const allJobsSlice = createSlice({
   },
 });
 
-export const { showLoading, hideLoading, setSearchCriteria } =
-  allJobsSlice.actions;
+export const {
+  showLoading,
+  hideLoading,
+  setSearchCriteria,
+  clearSearchCriteria,
+  handlePage,
+  clearState,
+} = allJobsSlice.actions;
 export default allJobsSlice.reducer;

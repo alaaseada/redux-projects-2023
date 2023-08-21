@@ -15,3 +15,4 @@ export { default as StatsContainer } from './StatsContainer';
 export { default as ChartsContainer } from './ChartsContainer';
 export { default as JobsAreaChart } from './JobsAreaChart';
 export { default as JobsBarChart } from './JobsBarChart';
+export { default as PageBtnContainer } from './PageBtnContainer';
