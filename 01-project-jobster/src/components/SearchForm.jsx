@@ -5,6 +5,7 @@ import {
   setSearchCriteria,
   clearSearchCriteria,
 } from '../features/allJobs/allJobsSlice';
+import { useEffect, useMemo, useState } from 'react';
 
 const SearchForm = () => {
   const { search, searchStatus, searchJobType, sort, sortOptions, isLoading } =
@@ -12,10 +13,17 @@ const SearchForm = () => {
   const { jobTypeOptions, jobStatusOptions } = useSelector(
     (store) => store.jobs
   );
+  const [localSearch, setLocalSearch] = useState('');
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    const debounceId = setTimeout(() => {
+      dispatch(setSearchCriteria({ name: 'search', value: localSearch }));
+    }, 750);
+    return () => clearTimeout(debounceId);
+  }, [localSearch, dispatch]);
+
   const handleFn = (e) => {
-    if (isLoading) return;
     const name = e.target.name;
     const value = e.target.value;
     dispatch(setSearchCriteria({ name, value }));
@@ -29,9 +37,9 @@ const SearchForm = () => {
           <FormRow
             labelText='search'
             name='search'
-            value={search}
+            value={localSearch}
             type='text'
-            handleFn={handleFn}
+            handleFn={(e) => setLocalSearch(e.target.value)}
           />
           <FormRowSelect
             labelText='job status'
@@ -58,6 +66,7 @@ const SearchForm = () => {
             className='btn btn-block btn-danger'
             onClick={(e) => {
               e.preventDefault();
+              setLocalSearch('');
               dispatch(clearSearchCriteria());
             }}
           >

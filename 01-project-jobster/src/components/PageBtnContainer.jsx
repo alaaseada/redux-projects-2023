@@ -26,10 +26,11 @@ const PageBtnContainer = () => {
         Previous
       </button>
       <div className='btn-container'>
-        {pages_array.map((item) => (
+        {pages_array.map((item, index) => (
           <button
             className={`pageBtn ${page === item ? 'active' : ''}`}
             name='page'
+            key={index}
             onClick={(e) => changePage(e, item)}
           >
             {item}

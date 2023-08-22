@@ -1,6 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import customFetch from '../../utils/axios';
-import { logoutUser } from './userSlice';
+import customFetch, { checkForUnauthorizedResponse } from '../../utils/axios';
 
 export const registerUser = createAsyncThunk(
   'users/registerUser',
@@ -33,11 +32,7 @@ export const UpdateUser = createAsyncThunk(
       const response = await customFetch.patch('/auth/updateUser', user);
       return response.data;
     } catch (error) {
-      if (error.response.status === 401) {
-        thunkAPI.dispatch(logoutUser());
-        return thunkAPI.rejectWithValue('Unauthorized! Logging out...');
-      }
-      return thunkAPI.rejectWithValue(error.response.data.msg);
+      return checkForUnauthorizedResponse(error, thunkAPI);
     }
   }
 );

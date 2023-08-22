@@ -1,5 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getAllJobsThunk, getJobStatsThunk } from './allJobsThunk';
+import {
+  clearAllStateValuesThunk,
+  getAllJobsThunk,
+  getJobStatsThunk,
+} from './allJobsThunk';
 import { toast } from 'react-toastify';
 
 const initialSearchCriteria = {
@@ -26,6 +30,11 @@ export const getAllJobs = createAsyncThunk('jobs/getAllJobs', getAllJobsThunk);
 export const getJobStats = createAsyncThunk(
   'jobs/getJobStats',
   getJobStatsThunk
+);
+
+export const clearAllStateValues = createAsyncThunk(
+  '/jobs/clearAllStateValues',
+  clearAllStateValuesThunk
 );
 
 const allJobsSlice = createSlice({
@@ -80,6 +89,9 @@ const allJobsSlice = createSlice({
       })
       .addCase(getJobStats.rejected, (state) => {
         state.isLoading = false;
+      })
+      .addCase(clearAllStateValues.rejected, (state, { payload }) => {
+        toast.error(payload);
       });
   },
 });

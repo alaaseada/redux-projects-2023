@@ -4,8 +4,7 @@ import { Logo } from '../components';
 import { toggleSidebar, logoutUser } from '../features/user/userSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
-import { clearState } from '../features/allJobs/allJobsSlice';
-import { clearValues } from '../features/job/jobSlice';
+import { clearAllStateValues } from '../features/allJobs/allJobsSlice';
 
 const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -14,12 +13,6 @@ const Navbar = () => {
 
   const toggleDropDown = () => {
     setShowDropdown(!showDropdown);
-  };
-
-  const clearAll = (dispatch) => {
-    dispatch(logoutUser('Logging out'));
-    dispatch(clearState());
-    dispatch(clearValues());
   };
 
   return (
@@ -46,7 +39,7 @@ const Navbar = () => {
               type='button'
               className='dropdown-btn'
               onClick={() => {
-                clearAll(dispatch);
+                dispatch(clearAllStateValues());
               }}
             >
               Logout

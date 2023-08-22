@@ -1,6 +1,7 @@
-import authHeader from '../../utils/authHeader';
-import customFetch from '../../utils/axios';
+import customFetch, { checkForUnauthorizedResponse } from '../../utils/axios';
 import { logoutUser } from '../user/userSlice';
+import { clearState } from '../allJobs/allJobsSlice';
+import { clearValues } from '../job/jobSlice';
 
 export const getAllJobsThunk = async (_, thunkAPI) => {
   try {
@@ -13,11 +14,7 @@ export const getAllJobsThunk = async (_, thunkAPI) => {
     const response = await customFetch.get(url);
     return response.data;
   } catch (error) {
-    if (error.response.status === 401) {
-      thunkAPI.dispatch(logoutUser());
-      return thunkAPI.rejectWithValue('Authentication Failed. Logging out...');
-    }
-    return thunkAPI.rejectWithValue(error.response.data.msg);
+    return checkForUnauthorizedResponse(error, thunkAPI);
   }
 };
 
@@ -26,10 +23,18 @@ export const getJobStatsThunk = async (_, thunkAPI) => {
     const response = await customFetch.get('/jobs/stats');
     return response.data;
   } catch (error) {
-    if (error.response.status === 401) {
-      thunkAPI.dispatch(logoutUser());
-      return thunkAPI.rejectWithValue('Authentication Failed. Logging out...');
-    }
-    return thunkAPI.rejectWithValue(error.response.data.msg);
+    return checkForUnauthorizedResponse(error, thunkAPI);
+  }
+};
+
+export const clearAllStateValuesThunk = async (message, thunkAPI) => {
+  try {
+    thunkAPI.dispatch(logoutUser('Logging out'));
+    thunkAPI.dispatch(clearState());
+    thunkAPI.dispatch(clearValues());
+    return Promise.resolve();
+  } catch (error) {
+    console.log(error);
+    return Promise.reject();
   }
 };
